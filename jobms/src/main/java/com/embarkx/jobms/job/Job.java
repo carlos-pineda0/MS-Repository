@@ -1,6 +1,5 @@
 package com.embarkx.jobms.job;
 
-import com.embarkx.firstjobapp.company.Company;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,7 +17,7 @@ public class Job {
     private String location;
 
     @ManyToOne
-    private Company company;
+    private Long companyId;
 
 
 }
