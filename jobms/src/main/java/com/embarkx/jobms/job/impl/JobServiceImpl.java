@@ -3,8 +3,12 @@ package com.embarkx.jobms.job.impl;
 import com.embarkx.jobms.job.Job;
 import com.embarkx.jobms.job.JobRepository;
 import com.embarkx.jobms.job.JobService;
+import com.embarkx.jobms.job.dto.JobWithCompanyDTO;
+import com.embarkx.jobms.job.external.Company;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,8 +22,20 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public List<Job> findAll() {
-        return jobRepository.findAll();
+    public List<JobWithCompanyDTO> findAll() {
+        return jobRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    public JobWithCompanyDTO convertToDTO(Job job) {
+        JobWithCompanyDTO jobWithCompanyDTO = new JobWithCompanyDTO();
+        jobWithCompanyDTO.setJob(job);
+        RestTemplate restTemplate = new RestTemplate();
+        Company company = restTemplate.getForObject("http://localhost:8081/companies/" + job.getCompanyId(), Company.class);
+        jobWithCompanyDTO.setCompany(company);
+        return jobWithCompanyDTO;
     }
 
     @Override
