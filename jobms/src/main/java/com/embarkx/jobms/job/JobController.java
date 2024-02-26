@@ -1,6 +1,6 @@
 package com.embarkx.jobms.job;
 
-import com.embarkx.jobms.job.dto.JobWithCompanyDTO;
+import com.embarkx.jobms.job.dto.JobDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/jobs")
 public class JobController {
 
     private JobService jobService;
@@ -16,29 +17,29 @@ public class JobController {
         this.jobService = jobService;
     }
 
-    @GetMapping("/jobs")
-    public List<JobWithCompanyDTO> findAll() {
+    @GetMapping
+    public List<JobDTO> findAll() {
         return jobService.findAll();
     }
 
-    @PostMapping("/jobs")
+    @PostMapping
     public ResponseEntity<String> createJob(@RequestBody Job job) {
         jobService.createJob(job);
         return ResponseEntity.status(HttpStatus.CREATED).body("created");
     }
 
-    @GetMapping("/jobs/{id}")
-    public ResponseEntity<Job> getJob(@PathVariable Long id) {
-        Job job = jobService.getJobById(id);
-        if (job != null) {
-            return new ResponseEntity<>(job, HttpStatus.OK);
+    @GetMapping("/{id}")
+    public ResponseEntity<JobDTO> getJob(@PathVariable Long id) {
+        JobDTO jobDTO = jobService.getJobById(id);
+        if (jobDTO != null) {
+            return new ResponseEntity<>(jobDTO, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-//        return new Job(-1L, "TestJob", "TestJob", "TestJob", "TestJob", "TestJob");
+
     }
 
-    @PutMapping("/jobs/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<String> updateJob(@PathVariable Long id, @RequestBody Job job) {
         if (jobService.updateJob(id, job)) {
             return new ResponseEntity<>("Updated", HttpStatus.OK);
@@ -47,7 +48,7 @@ public class JobController {
         }
     }
 
-    @DeleteMapping("/jobs/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteJob(@PathVariable Long id) {
         if (jobService.deleteById(id)) {
             return ResponseEntity.ok("Deleted");
