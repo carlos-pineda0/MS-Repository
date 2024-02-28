@@ -3,6 +3,7 @@ package com.embarkx.companyms.company.impl;
 import com.embarkx.companyms.company.Company;
 import com.embarkx.companyms.company.CompanyRepository;
 import com.embarkx.companyms.company.CompanyService;
+import com.embarkx.companyms.company.dto.ReviewMessage;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,5 +58,10 @@ public class CompanyServiceImpl implements CompanyService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Override
+    public void updateCompanyRating(ReviewMessage reviewMessage) {
+        System.out.println(reviewMessage.getDescription());
     }
 }
