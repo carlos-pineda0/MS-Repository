@@ -48,8 +48,93 @@ services:
       postgres:
 
 
+  # ms containers
+  servicereg:
+    image: carlospineda/servicereg
+    container_name: servicereg
+    ports:
+      - 8761:8761
+    depends_on:
+      - postgres
+      - pgadmin
+      - zipkin
+      - rabbitmq
+    networks:
+      - microservice-network
+      - postgres
+
+
+  config-server-ms:
+    image: carlospineda/config-server-ms
+    container_name: config-server-ms
+    ports:
+      - 8080:8080
+    depends_on:
+      - servicereg
+    networks:
+      - postgres
+      - microservice-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  companyms:
+    image: carlospineda/companyms
+    container_name: company
+    ports:
+      - 8081:8081
+    depends_on:
+      - config-server-ms
+    networks:
+      - microservice-network
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  jobms:
+    image: carlospineda/jobms
+    container_name: job
+    ports:
+      - 8082:8082
+    depends_on:
+      - config-server-ms
+    networks:
+      - microservice-network
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://servicereg:8761/eureka
+
+  reviewms:
+    image: carlospineda/reviewms
+    container_name: review
+    ports:
+      - 8083:8083
+    depends_on:
+      - config-server-ms
+    networks:
+      - microservice-network
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  gateway:
+    image: carlospineda/gateway-ms
+    ports:
+      - 8084:8084
+    depends_on:
+      - servicereg
+    networks:
+      - microservice-network
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+
+
 networks:
   postgres:
+    driver: bridge
+  microservice-network:
     driver: bridge
 
 volumes:
